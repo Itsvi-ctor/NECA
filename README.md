@@ -23,14 +23,14 @@ Because browsers enforce strict CORS policies and treat local `file://` URLs as 
     *Alternatively, you can double-click `start-server.bat` on Windows.*
 3.  Open your browser and navigate to:
     ```
-    http://localhost:8080/v2/neca-tool.html
+    http://localhost:8080/v2/index.html
     ```
 
 ## Project Structure
 
 The modern application interface is contained in the `v2/` directory:
 
-*   **`v2/neca-tool.html`**: The main application shell and structure.
+*   **`v2/index.html`**: The main application shell and structure.
 *   **`v2/neca-styles.css`**: The design system, including layout, tokens, and responsive behavior.
 *   **`v2/neca-app.js`**: Application logic handling file uploads, webcam streams, canvas drawing, and Roboflow REST API calls.
 
