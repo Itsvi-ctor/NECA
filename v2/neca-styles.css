@@ -619,20 +619,23 @@ input { font-family: inherit; }
 .stop-btn:hover { background: oklch(0.68 0.19 25 / 0.95); }
 
 /* ══════════════════════════════════════════
-   RESPONSIVE — single column below 700px
+   RESPONSIVE — stack vertically below 768px
 ══════════════════════════════════════════ */
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   body { overflow-y: auto; }
   .app {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    flex-direction: column;
     height: auto;
     min-height: 100vh;
   }
   .sidebar {
+    width: 100%;
     overflow: visible;
     border-right: none;
     border-bottom: 1px solid var(--border);
+  }
+  .sidebar-resizer {
+    display: none; /* No horizontal resizing on mobile */
   }
   .sidebar-header { position: static; }
   .main { min-height: 60vh; }
