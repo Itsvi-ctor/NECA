@@ -103,8 +103,7 @@ input { font-family: inherit; }
    APP LAYOUT — sidebar + main
 ══════════════════════════════════════════ */
 .app {
-  display: grid;
-  grid-template-columns: 280px 1fr;
+  display: flex;
   height: 100vh;
   overflow: hidden;
 }
@@ -113,6 +112,8 @@ input { font-family: inherit; }
    SIDEBAR
 ══════════════════════════════════════════ */
 .sidebar {
+  width: var(--sidebar-width, 280px);
+  flex-shrink: 0;
   background: var(--bg-surface);
   border-right: 1px solid var(--border);
   display: flex;
@@ -122,6 +123,22 @@ input { font-family: inherit; }
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+  position: relative;
+}
+
+/* Sidebar Resizer */
+.sidebar-resizer {
+  width: 4px;
+  background: transparent;
+  cursor: col-resize;
+  position: relative;
+  z-index: var(--z-raise);
+  transition: background var(--dur-fast);
+  flex-shrink: 0;
+  margin-left: -2px; /* Pull it slightly over the border */
+}
+.sidebar-resizer:hover, .sidebar-resizer.is-resizing {
+  background: var(--accent);
 }
 
 .sidebar-header {
@@ -423,6 +440,7 @@ input { font-family: inherit; }
    MAIN WORKSPACE
 ══════════════════════════════════════════ */
 .main {
+  flex: 1;
   background: var(--bg);
   overflow: hidden;
   position: relative;
@@ -576,6 +594,7 @@ input { font-family: inherit; }
 #video, #cam-canvas {
   max-width: 100%; max-height: 100%;
   border-radius: var(--r-md);
+  transform: scaleX(-1);
 }
 #cam-canvas {
   position: absolute;

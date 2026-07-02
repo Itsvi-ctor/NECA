@@ -123,6 +123,9 @@ const dom = {
   camCanvas:       el("cam-canvas"),
   startCamBtn:     el("start-cam-btn"),
   stopCamBtn:      el("stop-cam-btn"),
+  
+  // Resizer
+  sidebarResizer:  el("sidebar-resizer"),
 };
 
 /* ══════════════════════════════════════════
@@ -264,13 +267,15 @@ function paintImage(img, predictions) {
   }
 }
 
-function drawBoxes(ctx, preds, sx = 1, sy = 1) {
+function drawBoxes(ctx, preds, sx = 1, sy = 1, mirror = false) {
   preds.forEach((p) => {
     const color = getClassColor(state.model, p.class);
-    const x = (p.x - p.width  / 2) * sx;
-    const y = (p.y - p.height / 2) * sy;
-    const w = p.width  * sx;
+    const baseCx = p.x * sx;
+    const cx = mirror ? ctx.canvas.width - baseCx : baseCx;
+    const w = p.width * sx;
     const h = p.height * sy;
+    const x = cx - w / 2;
+    const y = (p.y - p.height / 2) * sy;
 
     // Translucent fill + glow
     ctx.save();
@@ -465,9 +470,15 @@ function captureCamFrame() {
 }
 
 function paintCamOverlay(preds) {
+  // Sync canvas size dynamically in case video layout aspect ratio changed
+  if (dom.camCanvas.width !== dom.video.videoWidth || dom.camCanvas.height !== dom.video.videoHeight) {
+    dom.camCanvas.width = dom.video.videoWidth;
+    dom.camCanvas.height = dom.video.videoHeight;
+  }
+  
   const ctx = dom.camCanvas.getContext("2d");
   ctx.clearRect(0, 0, dom.camCanvas.width, dom.camCanvas.height);
-  if (preds.length) drawBoxes(ctx, preds, 1, 1);
+  if (preds.length) drawBoxes(ctx, preds, 1, 1, true);
 }
 
 function stopCamera() {
@@ -580,4 +591,30 @@ function esc(s) {
 ══════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
   setStatus("ready", "Ready");
+  
+  // Sidebar resizing logic
+  let isResizing = false;
+  dom.sidebarResizer.addEventListener("mousedown", () => {
+    isResizing = true;
+    document.body.style.cursor = "col-resize";
+    dom.sidebarResizer.classList.add("is-resizing");
+  });
+  
+  window.addEventListener("mousemove", (e) => {
+    if (!isResizing) return;
+    const minWidth = 240;
+    const maxWidth = 500;
+    let newWidth = e.clientX;
+    if (newWidth < minWidth) newWidth = minWidth;
+    if (newWidth > maxWidth) newWidth = maxWidth;
+    document.body.style.setProperty("--sidebar-width", `${newWidth}px`);
+  });
+  
+  window.addEventListener("mouseup", () => {
+    if (isResizing) {
+      isResizing = false;
+      document.body.style.cursor = "";
+      dom.sidebarResizer.classList.remove("is-resizing");
+    }
+  });
 });
